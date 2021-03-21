@@ -35,41 +35,41 @@ router.get('/api/actions/:id', async(req, res) => {
 
 router.post('/api/actions', async(req, res) => {
     const body = req.body;
-    const createdAction = await Actions.insert(body);
-    try {
-        if (!body.description || !body.notes || !body.completed) {
-            res.status(400).json({ message: 'Please fill out missing fields' })
-        } else {
-            res.status(201).json(createdAction)
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
 
-})
+    if (!body.description || !body.notes || !body.project_id) {
+        res.status(400).json({ message: 'Please fill out missing fields' })
+    } else {
+        try {
+            const createdAction = await Actions.insert(body);
+            res.status(201).json(createdAction)
+        } catch (error) {
+            res.status(500).json({ message: error.message })
+        }
+    }
+});
 
 //put returns updated action
 
-router.put('/api/actions/"id', async(req, res) => {
+router.put('/api/actions/:id', async(req, res) => {
     const { id } = req.params;
     const body = req.body;
-    updatedAction = await Actions.update(id, body)
-    try {
-        if (!body) {
-            res.status(400).json({ message: 'Please fill out missing fields' })
-        } else {
-            res.status(200).json(updatedAction);
+    if (!body.description && !body.project_id && !body.notes) {
+        res.status(400).json({ message: 'Please fill out missing fields' })
+    } else {
+        try {
+            const updateAction = await Actions.update(id, body)
+            res.status(200).json(updateAction)
+        } catch (error) {
+            res.status(500).json({ message: error.message })
         }
-    } catch (error) {
-        res.status(500).json({ message: error.message })
     }
 })
 
 //delete returns no response body
 
-router.put('/api/actions/"id', async(req, res) => {
+router.delete('/api/actions/:id', async(req, res) => {
     const { id } = req.params;
-    deleteAction = await Actions.remove(id)
+    const deleteAction = await Actions.remove(id)
     try {
         if (!deleteAction) {
             res.status(404).json({ message: 'The ID provided does not exist' })
